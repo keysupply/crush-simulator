@@ -1,54 +1,115 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
+import React from 'react';
+import Firestore from "./Firestore";
+import firebase, { firestore } from 'firebase';
 import './App.css';
 
-class LambdaDemo extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { loading: false, msg: null };
-  }
+class App extends React.Component {
+    constructor() {
+        super();
+        this.state = {
+            analyse: "Analyse Data",
+            your_name: "",
+            crush_1: "",
+            crush_2: "",
+            crush_3: "",
+            crush_4: "",
+            crush_5: ""
+        };
+    }
 
-  handleClick = api => e => {
-    e.preventDefault();
+    updateInput = e => {
+        this.setState({
+            [e.target.name]: e.target.value
+        });
+    }
 
-    this.setState({ loading: true });
-    fetch('/.netlify/functions/' + api)
-      .then(response => response.json())
-      .then(json => this.setState({ loading: false, msg: json.msg }));
-  };
+    addUser = e => {
+      e.preventDefault();
+      const db = firebase.firestore();
+      db.settings({
+        timestampsInSnapshots: true
+      });
+      const userRef = db.collection("users").add({
+        your_name: this.state.your_name,
+        crush_1: this.state.crush_1,
+        crush_2: this.state.crush_2,
+        crush_3: this.state.crush_3,
+        crush_4: this.state.crush_4,
+        crush_5: this.state.crush_5
+      });
+      this.setState({
+        your_name: "",
+        crush_1: "",
+        crush_2: "",
+        crush_3: "",
+        crush_4: "",
+        crush_5: ""
+      });
+    };
 
-  render() {
-    const { loading, msg } = this.state;
 
-    return (
-      <p>
-        <button onClick={this.handleClick('hello')}>
-          {loading ? 'Loading...' : 'Call Lambda'}
-        </button>
-        <button onClick={this.handleClick('async-chuck-norris')}>
-          {loading ? 'Loading...' : 'Call Async Lambda'}
-        </button>
-        <br />
-        <span>{msg}</span>
-      </p>
-    );
-  }
-}
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <LambdaDemo />
-        </header>
-      </div>
-    );
-  }
+    handleClick = () => {
+      this.setState({
+        analyse: this.state.crush_1 + ' likes you!'
+      });
+    }
+
+    render() {
+        return (
+          <div className="wrapper">
+            <form onSubmit={this.addUser}>
+            <h3>LOVE</h3>
+            <h1>Calculator</h1>
+            <h4>Find out who likes you!</h4>
+            <br />
+            <input
+              type="text"
+              name="your_name"
+              placeholder="Your Name"
+              onChange={this.updateInput}
+              value={this.state.your_name}
+            />
+            <input
+              type="text"
+              name="crush_1"
+              placeholder="Crush 1"
+              onChange={this.updateInput}
+              value={this.state.crush_1}
+            />
+            <input
+              type="text"
+              name="crush_2"
+              placeholder="Crush 2"
+              onChange={this.updateInput}
+              value={this.state.crush_2}
+            />
+            <input
+              type="text"
+              name="crush_3"
+              placeholder="Crush 3"
+              onChange={this.updateInput}
+              value={this.state.crush_3}
+            />
+            <input
+              type="text"
+              name="crush_4"
+              placeholder="Crush 4"
+              onChange={this.updateInput}
+              value={this.state.crush_4}
+            />
+            <input
+              type="text"
+              name="crush_5"
+              placeholder="Crush 5"
+              onChange={this.updateInput}
+              value={this.state.crush_5}
+            />
+                      <button type="submit" className="submitbtn" onClick={this.handleClick}>{this.state.analyse}</button>
+          </form>
+        </div>
+        );
+    }
 }
 
 export default App;
